@@ -5,14 +5,19 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Countries and States</title>
-        <script src="script.js"></script>
+        <script src="script.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+        <script id="countriesTemp" type="text/x-handlebars-template">
+            {{#each country}}
+                <option value="{{this.name}}">{{this.name}}</option>
+            {{/each}}
+        </script>
     </head>
 
     <body>
         <form>
             <label for="countries">Countries:</label>
             <select id="countries" name="countries">
-                <option value="australia">Australia</option>
             </select>
             <br>
             <label for="states">States:</label>
