@@ -1,8 +1,27 @@
-const countriesUrl = 'https://xc-countries-api.fly.dev/api/countries/';
-let statesUrl;
-let currentId;
-let currentCode;
+function sortData (apiData) {
+  return apiData.sort(function (a, b) {
+    let nameA = a.name.toUpperCase();
+    let nameB = b.name.toUpperCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  });
+}
 
+function findIndex (apiData, selectedValue) {
+  for (let i = 0; i < apiData.length; i++) {
+    if (selectedValue === apiData[i].name) {
+      return i;
+    }
+  }
+}
+
+
+const countriesUrl = 'https://xc-countries-api.fly.dev/api/countries/';
 
 // Countries API and Handlebars
 fetch(countriesUrl)
@@ -15,17 +34,7 @@ fetch(countriesUrl)
     const template = Handlebars.compile(source);
 
     // Sorts Countries API data alphabetically by name
-    apiData.sort(function (a, b) {
-      let nameA = a.name.toUpperCase();
-      let nameB = b.name.toUpperCase();
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    });
+    sortData(apiData);
 
     const context = {
       country: apiData
@@ -39,26 +48,15 @@ fetch(countriesUrl)
     displayCountries.addEventListener("change", function() {
       // Get the selected value
       let selectedValue = this.value;
-    
-      if (selectedValue === 'Australia') {
-        currentId = apiData[0]["id"];
-        currentCode = apiData[0]["code"];
-      } else if (selectedValue === 'Canada') {
-        currentId = apiData[1]["id"];
-        currentCode = apiData[1]["code"];
-      } else if (selectedValue === 'United States'){
-        currentId = apiData[2]["id"];
-        currentCode = apiData[2]["code"];
-      } else if (selectedValue === 'Newington') {
-        currentId = apiData[3]["id"];
-        currentCode = apiData[3]["code"];
-      }
 
-      if (currentCode === apiData[0]["code"] || currentCode === apiData[1]["code"] || currentCode === apiData[2]["code"] || currentCode === apiData[3]["code"]) {
-        statesUrl = `https://xc-countries-api.fly.dev/api/countries/${currentCode}/states/`;
-      } else {
-        statesUrl = 'https://xc-countries-api.fly.dev/api/states/';
-      }
+      // Find selected value's index in Countries apiData
+      let index = findIndex(apiData, selectedValue);
+
+      let currentId = apiData[index].id;
+      let currentCode = apiData[index].code;
+
+      let statesUrl = `https://xc-countries-api.fly.dev/api/countries/${currentCode}/states/`;
+      // statesUrl = 'https://xc-countries-api.fly.dev/api/states/';
       
       
       // States API and Handlebars
@@ -70,6 +68,9 @@ fetch(countriesUrl)
           // Handlebars
           const source = document.getElementById('statesTemp').innerHTML;
           const template = Handlebars.compile(source);
+
+          // Sorts States API data alphabetically by name
+          sortData(apiData);
 
           const context = {
             state: apiData
