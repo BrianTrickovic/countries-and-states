@@ -33,12 +33,20 @@ fetch(countriesUrl)
       } else if (selectedValue === 'Canada') {
         currentId = apiData[1]["id"];
         currentCode = apiData[1]["code"];
-      } else {
+      } else if (selectedValue === 'United States'){
         currentId = apiData[2]["id"];
         currentCode = apiData[2]["code"];
+      } else if (selectedValue === 'Newington') {
+        currentId = apiData[3]["id"];
+        currentCode = apiData[3]["code"];
       }
 
-      statesUrl = `https://xc-countries-api.fly.dev/api/countries/${currentCode}/states/`;
+      if (currentCode === apiData[0]["code"] || currentCode === apiData[1]["code"] || currentCode === apiData[2]["code"] || currentCode === apiData[3]["code"]) {
+        statesUrl = `https://xc-countries-api.fly.dev/api/countries/${currentCode}/states/`;
+      } else {
+        statesUrl = 'https://xc-countries-api.fly.dev/api/states/';
+      }
+      
       
       // States API and Handlebars
       fetch(statesUrl)
@@ -62,5 +70,47 @@ fetch(countriesUrl)
     });
   })
   .catch(error => console.error(error));
+
+
+  const form = document.getElementById("form2");
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const value1 = document.getElementById("id").value;
+    const value2 = document.getElementById("code").value;
+    const value3 = document.getElementById("name").value;
+    console.log(value1);
+    const response = await fetch("https://xc-countries-api.fly.dev/api/countries/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: value1, code: value2, name: value3 }),
+    });
+    if (response.ok) {
+      const selectElement = document.getElementById("countries");
+      const optionElement = document.createElement("option");
+      optionElement.value = value3;
+      optionElement.textContent = value3;
+      selectElement.appendChild(optionElement);
+    }
+  });
+
+  const form3 = document.getElementById("form3");
+  form3.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const value1 = document.getElementById("code2").value;
+    const value2 = document.getElementById("name2").value;
+    console.log(value1);
+    const response = await fetch("https://xc-countries-api.fly.dev/api/states/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: value1, name: value2 }),
+    });
+    if (response.ok) {
+      const selectElement = document.getElementById("states");
+      const optionElement = document.createElement("option");
+      optionElement.value = value2;
+      optionElement.textContent = value2;
+      selectElement.appendChild(optionElement);
+    }
+  });
 
 
