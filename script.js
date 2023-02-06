@@ -16,10 +16,12 @@ fetch(countriesUrl)
 
     // Sorts Countries API data alphabetically by name
     apiData.sort(function (a, b) {
-      if (a.name < b.name) {
+      let nameA = a.name.toUpperCase();
+      let nameB = b.name.toUpperCase();
+      if (nameA < nameB) {
         return -1;
       }
-      if (a.name > b.name) {
+      if (nameA > nameB) {
         return 1;
       }
       return 0;
