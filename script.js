@@ -126,26 +126,48 @@ fetch(countriesUrl)
         selectElement.appendChild(optionElement);
       }
     });
-
+    
     // New State form
     const form3 = document.getElementById("form3");
     form3.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const value1 = document.getElementById("code2").value;
-      const value2 = document.getElementById("name2").value;
-      console.log(value1);
-      const response = await fetch("https://xc-countries-api.fly.dev/api/states/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: value1, name: value2 }),
-      });
-      if (response.ok) {
-        const selectElement = document.getElementById("states");
-        const optionElement = document.createElement("option");
-        optionElement.value = value2;
-        optionElement.textContent = value2;
-        selectElement.appendChild(optionElement);
-      }
+
+      let statesUrl = "https://xc-countries-api.fly.dev/api/states/";
+
+      let index = findIndex(apiData, displayCountries.value);
+      let currentId = apiData[index].id;
+
+      const value2 = document.getElementById("code2").value;
+      const value3 = document.getElementById("name2").value;
+
+      let nextId;
+      fetch(statesUrl)
+        .then(response => response.json())
+        .then(data => {
+          statesData = data;
+
+          statesData.sort(compareIdNumbers);
+
+          try {
+            nextId = getNextId(statesData);
+          } catch (error) {
+            nextId = statesData.length + 1;
+          }
+          console.log(nextId);
+          const response = fetch(statesUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: nextId, code: value2, name: value3, countryId: currentId }),
+          });
+          if (response.ok) {
+            const selectElement = document.getElementById("states");
+            const optionElement = document.createElement("option");
+            optionElement.value = value3;
+            optionElement.textContent = value3;
+            selectElement.appendChild(optionElement);
+          }
+        })
+        .catch(error => console.error(error));
     });
   })
   .catch(error => console.error(error));
