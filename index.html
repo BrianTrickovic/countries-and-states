@@ -8,13 +8,21 @@
         <script src="script.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
         <script id="countriesTemp" type="text/x-handlebars-template">
+            <option value="" selected disabled hidden>Choose here</option>
             {{#each country}}
-                <option value="{{this.name}}" id="{{this.id}}">{{this.name}}</option>
+                <option value="{{this.code}}">{{this.name}}</option>
+            {{/each}}
+        </script>
+        <script id="countriesTemp2" type="text/x-handlebars-template">
+            <option value="" selected disabled hidden>Choose here</option>
+            {{#each country}}
+                <option value="{{this.id}}">{{this.name}}</option>
             {{/each}}
         </script>
         <script id="statesTemp" type="text/x-handlebars-template">
+            <option value="" selected disabled hidden>Choose here</option>
             {{#each state}}
-                <option value="{{this.name}}">{{this.name}}</option>
+                <option value="{{this.countryId}}">{{this.name}}</option>
             {{/each}}
         </script>
     </head>
@@ -43,6 +51,11 @@
         </form>
         <form id="form3">
             <br>
+            <label for="newstate">Enter which country you would like to add a state:</label>
+            <br>
+            <select id="selectCountry" name="newstate">
+            </select>
+            <br>
             <label for="newstate">Enter a new state:</label>
             <br>
             <label for="newstate">Name:</label>
@@ -51,7 +64,5 @@
             <input type="text" name="newstate" id="code2">
             <input type="submit" value="Submit">
         </form>
-        
-        
     </body>
 </html>

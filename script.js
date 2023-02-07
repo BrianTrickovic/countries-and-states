@@ -12,26 +12,8 @@ function sortData (apiData) {
   });
 }
 
-function compareIdNumbers (a, b) {
-  return a.id - b.id;
-}
 
-function findIndex (apiData, selectedValue) {
-  for (let i = 0; i < apiData.length; i++) {
-    if (selectedValue === apiData[i].name) {
-      return i;
-    }
-  }
-}
-
-function getNextId (apiData) {
-  for (let i = 0; i < apiData.length; i++) {
-    if (apiData[i].id != (apiData[i + 1].id - 1)) {
-      return apiData[i].id + 1;
-    }
-  }
-}
-
+// GET SECTION
 
 const countriesUrl = 'https://xc-countries-api.fly.dev/api/countries/';
 
@@ -40,12 +22,12 @@ fetch(countriesUrl)
   .then(response => response.json())
   .then(data => {
     let apiData = data;
-    
-    // Handlebars
+
+    // START: First Countries Handlebars
     const source = document.getElementById('countriesTemp').innerHTML;
     const template = Handlebars.compile(source);
 
-    // Sorts Countries API data alphabetically by name
+    // sorts Countries API data alphabetically by name
     sortData(apiData);
 
     const context = {
@@ -55,19 +37,26 @@ fetch(countriesUrl)
 
     const displayCountries = document.getElementById('countries');
     displayCountries.innerHTML = compiledHtml;
+    // END: First Countries Handlebars
 
-    // Gets currently selected value from user on Countries dropdown menu
+    // START: Second Countries Handlebars
+    const source2 = document.getElementById('countriesTemp2').innerHTML;
+    const template2 = Handlebars.compile(source2);
+
+    const context2 = {
+      country: apiData
+    }
+    const compiledHtml2 = template2(context2);
+
+    const displayCountries2 = document.getElementById('selectCountry');
+    displayCountries2.innerHTML = compiledHtml2;
+    // END: Second Countries Handlebars
+
+    // gets currently selected value from user on Countries dropdown menu
     displayCountries.addEventListener("change", function() {
-      // Get the selected value
+      // get the selected value
       let selectedValue = this.value;
-
-      // Find selected value's index in Countries apiData
-      let index = findIndex(apiData, selectedValue);
-
-      let currentId = apiData[index].id;
-      let currentCode = apiData[index].code;
-
-      let statesUrl = `https://xc-countries-api.fly.dev/api/countries/${currentCode}/states/`;
+      let statesUrl = `https://xc-countries-api.fly.dev/api/countries/${selectedValue}/states/`;
       // statesUrl = 'https://xc-countries-api.fly.dev/api/states/';
       
       
@@ -77,11 +66,11 @@ fetch(countriesUrl)
         .then(data => {
           let apiData = data;
 
-          // Handlebars
+          // START: States Handlebars
           const source = document.getElementById('statesTemp').innerHTML;
           const template = Handlebars.compile(source);
 
-          // Sorts States API data alphabetically by name
+          // sorts States API data alphabetically by name
           sortData(apiData);
 
           const context = {
@@ -91,32 +80,24 @@ fetch(countriesUrl)
 
           const displayStates = document.getElementById('states');
           displayStates.innerHTML = compiledHtml;
+          // END: States Handlebars
         })
         .catch(error => console.error(error));
     });
 
-    // POST form section
 
-    apiData.sort(compareIdNumbers);
-    // calculates the lowest available id value
-    let nextId;
-    try {
-      nextId = getNextId(apiData);
-    } catch (error) {
-      nextId = apiData.length + 1;
-    }
+    // POST FORM SECTION
 
     // New Country form
     const form2 = document.getElementById("form2");
     form2.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const value1 = nextId;
-      const value2 = document.getElementById("code").value;
-      const value3 = document.getElementById("name").value;
-      const response = await fetch("https://xc-countries-api.fly.dev/api/countries/", {
+      const code = document.getElementById("code").value;
+      const name = document.getElementById("name").value;
+      const response = await fetch(countriesUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: value1, code: value2, name: value3 }),
+        body: JSON.stringify({ code: code, name: name }),
       });
       if (response.ok) {
         const selectElement = document.getElementById("countries");
@@ -132,42 +113,24 @@ fetch(countriesUrl)
     form3.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      let statesUrl = "https://xc-countries-api.fly.dev/api/states/";
+      let statesUrl = "https://xc-countries-api.fly.dev/api/states/";      
 
-      let index = findIndex(apiData, displayCountries.value);
-      let currentId = apiData[index].id;
+      const code2 = document.getElementById("code2").value;
+      const name2 = document.getElementById("name2").value;
+      let currentId = displayCountries2.value;
 
-      const value2 = document.getElementById("code2").value;
-      const value3 = document.getElementById("name2").value;
-
-      let nextId;
-      fetch(statesUrl)
-        .then(response => response.json())
-        .then(data => {
-          statesData = data;
-
-          statesData.sort(compareIdNumbers);
-
-          try {
-            nextId = getNextId(statesData);
-          } catch (error) {
-            nextId = statesData.length + 1;
-          }
-          console.log(nextId);
-          const response = fetch(statesUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: nextId, code: value2, name: value3, countryId: currentId }),
-          });
-          if (response.ok) {
-            const selectElement = document.getElementById("states");
-            const optionElement = document.createElement("option");
-            optionElement.value = value3;
-            optionElement.textContent = value3;
-            selectElement.appendChild(optionElement);
-          }
-        })
-        .catch(error => console.error(error));
+      const response = await fetch(statesUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code2, name: name2, countryId: currentId }),
+      });
+      if (response.ok) {
+        const selectElement = document.getElementById("states");
+        const optionElement = document.createElement("option");
+        optionElement.value = name2;
+        optionElement.textContent = name2;
+        selectElement.appendChild(optionElement);
+      }
     });
   })
   .catch(error => console.error(error));
