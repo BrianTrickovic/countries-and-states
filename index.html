@@ -9,19 +9,19 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
         <script id="countriesTemp" type="text/x-handlebars-template">
             <option value="" selected disabled hidden>Choose here</option>
-            {{#each country}}
+            {{#each countries}}
                 <option value="{{this.code}}">{{this.name}}</option>
             {{/each}}
         </script>
         <script id="countriesTemp2" type="text/x-handlebars-template">
             <option value="" selected disabled hidden>Choose here</option>
-            {{#each country}}
+            {{#each countries}}
                 <option value="{{this.id}}">{{this.name}}</option>
             {{/each}}
         </script>
         <script id="statesTemp" type="text/x-handlebars-template">
             <option value="" selected disabled hidden>Choose here</option>
-            {{#each state}}
+            {{#each states}}
                 <option value="{{this.countryId}}">{{this.name}}</option>
             {{/each}}
         </script>
