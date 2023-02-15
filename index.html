@@ -6,63 +6,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Countries and States</title>
         <script src="script.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
-        <script id="countriesTemp" type="text/x-handlebars-template">
-            <option value="" selected disabled hidden>Choose here</option>
-            {{#each countries}}
-                <option value="{{this.code}}">{{this.name}}</option>
-            {{/each}}
-        </script>
-        <script id="countriesTemp2" type="text/x-handlebars-template">
-            <option value="" selected disabled hidden>Choose here</option>
-            {{#each countries}}
-                <option value="{{this.id}}">{{this.name}}</option>
-            {{/each}}
-        </script>
-        <script id="statesTemp" type="text/x-handlebars-template">
-            <option value="" selected disabled hidden>Choose here</option>
-            {{#each states}}
-                <option value="{{this.countryId}}">{{this.name}}</option>
-            {{/each}}
-        </script>
     </head>
 
     <body>
-        <form id="form">
-            <label for="countries">Countries:</label>
-            <select id="countries" name="countries">
-            </select>
-            <br>
-            <label for="states">States:</label>
-            <select id="states" name="states">
-            </select>
+        <form>
+            <dropdown-menu for="countries" label-title="Select a country:"></dropdown-menu>
+            <dropdown-menu for="states" label-title="Select a state:"></dropdown-menu>
         </form>
         <br>
-        <form id="form2">
-            <label for="newcountry">Enter a new country:</label>
-            <br>
-            <!-- <label for="newcountry">ID:</label>
-            <input type="text" id="id"> -->
-            <label for="newcountry">Name:</label>
-            <input type="text" id="name">
-            <label for="newcountry">Code:</label>
-            <input type="text" id="code">
-            <button type="submit">Submit</button>
-        </form>
-        <form id="form3">
-            <br>
-            <label for="newstate">Enter which country you would like to add a state:</label>
-            <br>
-            <select id="selectCountry" name="newstate">
-            </select>
-            <br>
-            <label for="newstate">Enter a new state:</label>
-            <br>
-            <label for="newstate">Name:</label>
-            <input type="text" name="newstate" id="name2">
-            <label for="newstate">Code:</label>
-            <input type="text" name="newstate" id="code2">
-            <input type="submit" value="Submit">
-        </form>
+        <create-new-form for="countries" label-title="Enter a new country:"></create-new-form>
+        <create-new-form for="states" show-dropdown dropdown-label-title="Select which country you would like to add a state:" dropdown-select-id="selectCountry" label-title="Enter a new state:"></create-new-form>
     </body>
 </html>
