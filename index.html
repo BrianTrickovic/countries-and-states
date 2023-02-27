@@ -10,11 +10,11 @@
 
     <body>
         <form>
-            <dropdown-menu for="countries" label-title="Select a country:"></dropdown-menu>
-            <dropdown-menu for="states" label-title="Select a state:"></dropdown-menu>
+            <dropdown-menu for="countries" label-title="Select a country:" api-href="https://xc-countries-api.fly.dev/api/countries/"></dropdown-menu>
+            <dropdown-menu for="states" label-title="Select a state:" get-value-from="countries" apply-value-to-second-api-href="https://xc-countries-api.fly.dev/api/countries/${selectedValue}/states/"></dropdown-menu>
         </form>
         <br>
-        <create-new-form for="countries" label-title="Enter a new country:"></create-new-form>
-        <create-new-form for="states" show-dropdown dropdown-label-title="Select which country you would like to add a state:" dropdown-select-id="selectCountry" label-title="Enter a new state:"></create-new-form>
+        <create-new-form for="countries" label-title="Enter a new country:" post-api-href="https://xc-countries-api.fly.dev/api/countries/"></create-new-form>
+        <create-new-form for="states" show-dropdown dropdown-label-title="Select which country you would like to add a state:" dropdown-api-href="https://xc-countries-api.fly.dev/api/countries/" label-title="Enter a new state:" post-api-href="https://xc-countries-api.fly.dev/api/states/"></create-new-form>
     </body>
 </html>
