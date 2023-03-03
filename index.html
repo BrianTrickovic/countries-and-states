@@ -5,16 +5,20 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Countries and States</title>
-        <script src="script.js" defer></script>
+        <script type="module" src="script.js" defer></script>
     </head>
 
     <body>
         <form>
-            <dropdown-menu for="countries" label-title="Select a country:" api-href="https://xc-countries-api.fly.dev/api/countries/"></dropdown-menu>
-            <dropdown-menu for="states" label-title="Select a state:" get-value-from="countries" apply-value-to-second-api-href="https://xc-countries-api.fly.dev/api/countries/${selectedValue}/states/"></dropdown-menu>
+            <dropdown-menu labeltitle="Select a country"></dropdown-menu>
+            <br>
+            <dropdown-menu labeltitle="Select a state"></dropdown-menu>
         </form>
         <br>
-        <create-new-form for="countries" label-title="Enter a new country:" post-api-href="https://xc-countries-api.fly.dev/api/countries/"></create-new-form>
-        <create-new-form for="states" show-dropdown dropdown-label-title="Select which country you would like to add a state:" dropdown-api-href="https://xc-countries-api.fly.dev/api/countries/" label-title="Enter a new state:" post-api-href="https://xc-countries-api.fly.dev/api/states/"></create-new-form>
+        <create-new-option labeltitle="Enter a new country" apihref="https://xc-countries-api.fly.dev/api/countries/"></create-new-option>
+        <br>
+        <create-new-option-with-dropdown labeltitle="Enter a new state" apihref="https://xc-countries-api.fly.dev/api/states/">
+            <dropdown-menu labeltitle="Select which country you would like to add a state"></dropdown-menu>
+        </create-new-option-with-dropdown>
     </body>
 </html>
