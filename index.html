@@ -5,7 +5,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Countries and States</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
         <script type="module" src="script.js" defer></script>
+        
     </head>
 
     <body>
@@ -15,10 +17,15 @@
             <dropdown-menu labeltitle="Select a state"></dropdown-menu>
         </form>
         <br>
-        <create-new-option labeltitle="Enter a new country" apihref="https://xc-countries-api.fly.dev/api/countries/"></create-new-option>
+        <create-new-option labeltitle="Enter a new country" apihref="https://xc-countries-api.fly.dev/api/countries/">
+            <i class="fas fa-check-circle checkmark" slot="success"></i>
+            <i class="fas fa-times-circle x" slot="error"></i>
+        </create-new-option>
         <br>
         <create-new-option-with-dropdown labeltitle="Enter a new state" apihref="https://xc-countries-api.fly.dev/api/states/">
             <dropdown-menu labeltitle="Select which country you would like to add a state"></dropdown-menu>
+            <i class="fas fa-check-circle checkmark" slot="success"></i>
+            <i class="fas fa-times-circle x" slot="error"></i>
         </create-new-option-with-dropdown>
     </body>
 </html>

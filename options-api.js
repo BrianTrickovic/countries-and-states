@@ -1,59 +1,51 @@
-// FUNCTION: Sorts an array's data alphabetically
+// FUNCTION: Sorts an array's data alphabetically + handles cases where
+// the names may contain special characters or diacritics
 function sortData(apiData) {
-    return apiData.sort(function (a, b) {
-        const nameA = a.name.toUpperCase();
-        const nameB = b.name.toUpperCase();
-        if (nameA < nameB) {
-        return -1;
+    return apiData.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+async function independentDropdownData(element, value) {
+    try {
+        const response = await fetch('https://xc-countries-api.fly.dev/api/countries/');
+        if (response.ok) {
+            const jsonResponse = await response.json();
+            sortData(jsonResponse);
+            let convertedArrayData;
+            switch (value) {
+                case 'code':
+                    convertedArrayData = jsonResponse.map(item => {
+                        return {value: item.code, name: item.name}
+                    })
+                    break;
+                    
+                case 'id':
+                    convertedArrayData = jsonResponse.map(item => {
+                        return {value: item.id, name: item.name}
+                    })
+                    break;
+
+                default:
+                    break;
+            }
+            element.optionsArray = convertedArrayData;
         }
-        if (nameA > nameB) {
-        return 1;
+    } catch (error) {
+        console.log('There was a problem with the API call:', error);
+    }
+}
+
+async function dependentDropdownData(code, element) {
+    try {
+        const response = await fetch(`https://xc-countries-api.fly.dev/api/countries/${code}/states/`);
+        if (response.ok) {
+            const jsonResponse = await response.json();
+            sortData(jsonResponse);
+            element.optionsArray = jsonResponse;
         }
-        return 0;
-    });
-  }
+    } catch (error) {
+        console.log('There was a problem with the API call:', error);
+    }
+}
 
-let objectData = {};
 
-let arrayIdCodeAndName;
-
-await fetch('https://xc-countries-api.fly.dev/api/countries/')
-.then(response => response.json())
-.then(data => {
-    sortData(data);
-    arrayIdCodeAndName = data.map(item => {
-        return [item.id, item.code, item.name];
-    })
-})
-.catch(error => {
-    console.error('There was a problem with the API call:', error);
-});
-
-for (const array in arrayIdCodeAndName) {
-    let stateNames;
-    let singleArrayTriad = arrayIdCodeAndName[array];
-    let arrayId = singleArrayTriad[0];
-    let arrayCode = singleArrayTriad[1];
-    let arrayName = singleArrayTriad[2];
-    await fetch(`https://xc-countries-api.fly.dev/api/countries/${arrayCode}/states/`)
-    .then(response => response.json())
-    .then(data => {
-        sortData(data);
-        stateNames = data.map(state => {
-            return state.name;
-        })
-        objectData[arrayName] = stateNames;
-    })
-    .catch(error => {
-        console.error('There was a problem with the API call:', error);
-    });
-};
-
-const countryNames = arrayIdCodeAndName.map(item => {
-    return item[2];
-});
-const countryIds = arrayIdCodeAndName.map(item => {
-    return item[0];
-})
-
-export { objectData, countryNames, countryIds }
+export { independentDropdownData, dependentDropdownData }

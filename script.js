@@ -1,13 +1,12 @@
-import {LitElement, css, html} from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
-import { objectData, countryNames, countryIds } from './options-api.js';
+import { LitElement, css, html } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/core/lit-core.min.js';
+import { independentDropdownData, dependentDropdownData } from './options-api.js';
 
 export class DropdownMenu extends LitElement {
   static properties = {
-    name: {},
-    labelTitle: { reflect: true },
+    post: { type: Boolean },
+    labelTitle: { type: String, reflect: true },
     optionsArray: { type: Array },
-    optionValueInput: { type: Array },
-    value: {reflect: true, type: String, default: '' },
+    value: { type: String, reflect: true },
   }
 
   static styles = css`
@@ -19,6 +18,7 @@ export class DropdownMenu extends LitElement {
 
   constructor() {
     super();
+    this.optionsArray = [];
   }
 
   render() {
@@ -26,9 +26,14 @@ export class DropdownMenu extends LitElement {
       <label>${this.labelTitle}:</label>
       <select @change=${this._optionChange}>
         <option selected disabled hidden>Choose here</option>
-        ${this.optionsArray ? this.optionsArray.map((item, index) => html`
-          <option value=${this.optionValueInput[index]}>${item}</option>
-        `) : ''}
+        ${this.optionsArray.length > 0
+          ? this.optionsArray.map(
+              (item) => html`
+                <option selected disabled hidden>Choose here</option>
+                <option value=${item.value}>${item.name}</option>
+              `
+            )
+          : html`<option selected disabled hidden>(none)</option>`}
       </select>
     `;
   }
@@ -41,8 +46,9 @@ customElements.define('dropdown-menu', DropdownMenu);
 
 export class CreateNewOption extends LitElement {
   static properties = {
-    labelTitle: { reflect: true },
-    apiHref: { reflect: true },
+    labelTitle: { type: String, reflect: true },
+    icon: {},
+    apiHref: { type: String, reflect: true },
     name: { type: String },
     code: { type: String },
   }
@@ -51,6 +57,12 @@ export class CreateNewOption extends LitElement {
     :host {
       display: block;
       margin: 0;
+    }
+    ::slotted(.checkmark) {
+      color: green;
+    }
+    ::slotted(.x) {
+      color: red;
     }
   `;
   
@@ -60,30 +72,46 @@ export class CreateNewOption extends LitElement {
 
   render() {
     return html`
-      <label>${this.labelTitle}:<label>
+      <label>${this.labelTitle}:</label>
       <br>
       <label>Name:</label>
       <input type="text"></input>
       <label>Code:</label>
       <input type="text"></input>
       <button type="submit" @click=${this._buttonSubmit}>Submit</button>
+      ${this.icon}
     `
   }
 
   postRequest(url, code, name) {
-    const response = fetch(url, {
+    fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: code, name: name }),
-    });
-    if (response.ok) {
-      console.log("POST: SUCCESS");
-    }
+      body: JSON.stringify({ code: code, name: name })
+    }).then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      this.icon = html`
+        <slot name="error">
+        </slot>
+      `
+      throw new Error('Request failed!');
+    }, networkError => {
+      console.log(networkError.message);
+    }).then(jsonResponse => {
+      console.log(jsonResponse);
+      this.icon = html`
+        <slot name="success">
+        </slot>
+      `
+    })
   }
 
   _buttonSubmit(e) {
-    this.name = this.shadowRoot.querySelector('input').value;
-    this.code = this.shadowRoot.querySelectorAll('input')[1].value;
+    const inputElements = this.shadowRoot.querySelectorAll('input');
+    this.name = inputElements[0].value;
+    this.code = inputElements[1].value;
 
     this.postRequest(this.apiHref, this.code, this.name);
   }
@@ -92,17 +120,24 @@ customElements.define("create-new-option", CreateNewOption);
 
 export class CreateNewOptionWithDropdown extends LitElement {
   static properties = {
-    labelTitle: { reflect: true },
-    apiHref: { reflect: true },
+    labelTitle: { type: String, reflect: true },
+    apiHref: { type: String, reflect: true },
+    icon: { type: String },
     name: { type: String },
     code: { type: String },
-    id: { type: Number }
+    id: { type: Number },
   }
 
   static styles = css`
     :host {
       display: block;
       margin: 0;
+    }
+    ::slotted(.checkmark) {
+      color: green;
+    }
+    ::slotted(.x) {
+      color: red;
     }
   `;
   
@@ -121,18 +156,33 @@ export class CreateNewOptionWithDropdown extends LitElement {
       <label>Code:</label>
       <input type="text"></input>
       <button type="submit" @click=${this._buttonSubmit}>Submit</button>
+      ${this.icon}
     `
   }
 
   postRequest(url, code, name, id) {
-    const response = fetch(url, {
+    fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: code, name: name, countryId: id }),
-    });
-    if (response.ok) {
-      console.log("POST: SUCCESS");
-    }
+      body: JSON.stringify({ code: code, name: name, countryId: id })
+    }).then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      this.icon = html`
+        <slot name="error">
+        </slot>
+      `
+      throw new Error('Request failed!');
+    }, networkError => {
+      console.log(networkError.message);
+    }).then(jsonResponse => {
+      console.log(jsonResponse);
+      this.icon = html`
+        <slot name="success">
+        </slot>
+      `
+    })
   }
 
   _buttonSubmit(e) {
@@ -149,18 +199,8 @@ customElements.define("create-new-option-with-dropdown", CreateNewOptionWithDrop
 
 const dropdownMenuElements = document.querySelectorAll('dropdown-menu');
 
-// dropdownMenuElements[0].optionsArray = [];
-// dropdownMenuElements[0].optionValueInput = [];
-// dropdownMenuElements[2].optionsArray = [];
-// dropdownMenuElements[2].optionValueInput = [];
-
-dropdownMenuElements[0].optionsArray = countryNames;
-dropdownMenuElements[0].optionValueInput = countryNames;
-
-dropdownMenuElements[1].optionValueInput = '';
-
-dropdownMenuElements[2].optionsArray = countryNames;
-dropdownMenuElements[2].optionValueInput = countryIds;
+independentDropdownData(dropdownMenuElements[0], 'code')
+independentDropdownData(dropdownMenuElements[2], 'id')
 
 // Create a new MutationObserver instance
 const observer = new MutationObserver((mutationsList, observer) => {
@@ -170,11 +210,10 @@ const observer = new MutationObserver((mutationsList, observer) => {
     if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
       // Get the new value of the "value" attribute
       const newValue = mutation.target.getAttribute('value');
-      // Use the new value to retrieve ObjectData's value (an array) of the selected key
-      // then assign that array to the 2nd dropdown-menu element's optionsArray reactive property
+      // Use the new value as input for the 1st parameter of dependentDropdownData function to
+      // retrieve a country's state list on the user's demand.
       console.log('New value:', newValue);
-      const dataForSelectedValue = objectData[newValue];
-      dropdownMenuElements[1].optionsArray = dataForSelectedValue;
+      dependentDropdownData(newValue, dropdownMenuElements[1])
     }
   }
 });
